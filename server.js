@@ -58,6 +58,12 @@ var serializer = new EasyXml({
 // app.use(responseTime);
 app.use('/', express.static('public'));
 
+app.get('/', (req, res) => {
+	res.json({
+		message: 'welcome'
+	});
+});
+
 // Insert here other API endpoints
 app.post('/api/v1/on-covid-19', (req, res, next) => {
   const data = req.body;
