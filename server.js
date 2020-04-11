@@ -4,7 +4,11 @@ var covid19ImpactEstimator = require('./helper/estimator');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 var EasyXml = require('easyxml');
-var db = require('./database');
+const {createTable, getLogs, insertLogs} = require('./query')
+
+createTable()
+
+
 
 const nanosecondsInASecond = 1e9;
 const nanosecondsInAMillisecond = 1e6;
@@ -43,20 +47,9 @@ const responseTime = (req, res, next) => {
   res.on('finish', () => {
     var log = `${req.method}    ${req.baseUrl ? req.baseUrl : ''}${
       req.path
-    }   ${res.statusCode}   ${getDuration(startTime)}ms`;
-    var sql = 'INSERT INTO logs (log) VALUES (?)';
-    var params = [log];
-    db.run(sql, params, (err, result) => {
-      if (err) {
-        console.log(err);
-        return;
-      }
-    });
-    console.log(
-      `${req.method}    ${req.baseUrl ? req.baseUrl : ''}${req.path}   ${
-        res.statusCode
-      }   ${getDuration(startTime)}ms`
-    );
+		}   ${res.statusCode}   ${getDuration(startTime)}ms`;
+		
+    insertLogs(log)
   });
 
   next();
@@ -94,19 +87,14 @@ const makeString = (item) => {
   return item;
 };
 
-app.get('/api/v1/on-covid-19/logs', (req, res) => {
-  var sql = 'select * from logs';
-  var params = [];
-  db.all(sql, params, (err, rows) => {
-    if (err) {
-      res.status(400).json({ error: err.message });
-      return;
-    }
-    res.set('Accept', 'text/plain');
+app.get('/api/v1/on-covid-19/logs', async(req, res) => {
+
+		const rows = await getLogs()
+		res.set('Accept', 'text/plain');
+		
     const logs = rows.map(({ log }) => `${log}\n`).join();
     res.send(makeString(logs));
   });
-});
 
 // Default response for any other request
 app.use(function (req, res) {
