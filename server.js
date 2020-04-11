@@ -56,7 +56,6 @@ var serializer = new EasyXml({
 // };
 
 // app.use(responseTime);
-app.use('/', express.static('public'));
 
 app.get('/', (req, res) => {
 	res.json({
