@@ -55,7 +55,7 @@ var serializer = new EasyXml({
 //   next();
 // };
 
-app.use(responseTime);
+// app.use(responseTime);
 app.use('/', express.static('public'));
 
 // Insert here other API endpoints
