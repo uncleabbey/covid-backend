@@ -4,9 +4,9 @@ var covid19ImpactEstimator = require('./helper/estimator');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 var EasyXml = require('easyxml');
-// const {createTable, getLogs, insertLogs} = require('./query')
+const {createTable, getLogs, insertLogs} = require('./query')
 
-// createTable()
+createTable()
 
 
 
@@ -41,21 +41,21 @@ var serializer = new EasyXml({
   manifest: true,
 });
 
-// const responseTime = (req, res, next) => {
-//   const startTime = process.hrtime();
+const responseTime = (req, res, next) => {
+  const startTime = process.hrtime();
 
-//   res.on('finish', () => {
-//     var log = `${req.method}    ${req.baseUrl ? req.baseUrl : ''}${
-//       req.path
-// 		}   ${res.statusCode}   ${getDuration(startTime)}ms`;
+  res.on('finish', () => {
+    var log = `${req.method}    ${req.baseUrl ? req.baseUrl : ''}${
+      req.path
+		}   ${res.statusCode}   ${getDuration(startTime)}ms`;
 		
-//     insertLogs(log)
-//   });
+    insertLogs(log)
+  });
 
-//   next();
-// };
+  next();
+};
 
-// app.use(responseTime);
+app.use(responseTime);
 
 app.get('/', (req, res) => {
 	res.json({
@@ -92,14 +92,14 @@ const makeString = (item) => {
   return item;
 };
 
-// app.get('/api/v1/on-covid-19/logs', async(req, res) => {
-
-// 		const rows = await getLogs()
-// 		res.set('Accept', 'text/plain');
+app.get('/api/v1/on-covid-19/logs', async(req, res) => {
+		const rows = await getLogs()
+		res.set('Accept', 'text/plain');
 		
-//     const logs = rows.map(({ log }) => `${log}\n`).join();
-//     res.send(makeString(logs));
-//   });
+    const logs = rows.map(({ log }) => `${log}\n`).join();
+    res.send(makeString(logs));
+  });
+
 
 // Default response for any other request
 app.use(function (req, res) {
