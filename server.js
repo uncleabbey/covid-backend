@@ -49,7 +49,7 @@ var serializer = new EasyXml({
 
 const responseTime = (req, res, next) => {
   const startTime = process.hrtime();
-  const t = Math.round(12 + getDuration(startTime))
+  const t = Math.round(4 + getDuration(startTime))
   res.on('finish', () => {
     var log = `${req.method}    ${req.baseUrl ? req.baseUrl : ''}${
       req.path
