@@ -42,7 +42,6 @@ const getLogs = () => {
     return db
       .manyOrNone(getQuery)
       .then(res => {
-        console.log(res);
         return resolve(res);
       })
       .catch(err => {

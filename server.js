@@ -6,7 +6,7 @@ var cors = require('cors');
 var EasyXml = require('easyxml');
 const {createTable, getLogs, insertLogs, deleteLogs} = require('./query')
 const dotenv = require('dotenv')
-
+const morgan = require('morgan')
 
 dotenv.config();
 
@@ -32,7 +32,7 @@ const getDuration = (start) => {
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
+app.use(morgan(':method   :url   :status :response-time ms'))
 // Server port
 var HTTP_PORT = process.env.PORT || 8000;
 // Start server
@@ -54,10 +54,8 @@ const responseTime = (req, res, next) => {
     var log = `${req.method}    ${req.baseUrl ? req.baseUrl : ''}${
       req.path
 		}   ${res.statusCode}   ${frmat(t)}ms`;
-		
     insertLogs(log)
   });
-
   next();
 };
 
