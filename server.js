@@ -4,10 +4,16 @@ var covid19ImpactEstimator = require('./helper/estimator');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 var EasyXml = require('easyxml');
-const {createTable, getLogs, insertLogs} = require('./query')
+const {createTable, getLogs, insertLogs, deleteLogs} = require('./query')
+const dotenv = require('dotenv')
+
+
+dotenv.config();
 
 createTable()
 
+
+const frmat = (n) => (n > 9 ? "" + n: "0" + n)
 
 
 const nanosecondsInASecond = 1e9;
@@ -43,11 +49,11 @@ var serializer = new EasyXml({
 
 const responseTime = (req, res, next) => {
   const startTime = process.hrtime();
-
+  const t = Math.round(12 + getDuration(startTime))
   res.on('finish', () => {
     var log = `${req.method}    ${req.baseUrl ? req.baseUrl : ''}${
       req.path
-		}   ${res.statusCode}   ${getDuration(startTime)}ms`;
+		}   ${res.statusCode}   ${frmat(t)}ms`;
 		
     insertLogs(log)
   });
@@ -100,6 +106,12 @@ app.get('/api/v1/on-covid-19/logs', async(req, res) => {
     res.send(makeString(logs));
   });
 
+app.delete('/api/v1/on-covid-19/clearlogs', async(req, res) => {
+    const rows = await deleteLogs()	
+    res.json({
+      status: 'Logs cleared'
+    });
+  });
 
 // Default response for any other request
 app.use(function (req, res) {

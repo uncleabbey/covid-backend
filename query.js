@@ -52,8 +52,23 @@ const getLogs = () => {
       });
   });
 }
+const deleteLogsQuery = `DELETE FROM logs;`
+
+const deleteLogs = (log) => {
+  return new Promise((resolve, reject) => {
+    db.none(deleteLogsQuery).then(res => {
+        console.log();
+        resolve();
+      }).catch(error => {
+        console.log(error);
+        reject(error);
+      })
+  })
+}
+
 module.exports = {
   createTable,
   insertLogs,
-  getLogs
+  getLogs,
+  deleteLogs
 }
